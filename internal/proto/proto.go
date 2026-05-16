@@ -168,7 +168,7 @@ func findURLPref(v any, preferKey bool) string {
 		if preferKey {
 			for k, sv := range t {
 				lk := strings.ToLower(k)
-				if (strings.Contains(lk, "url") || strings.Contains(lk, "link")) {
+				if strings.Contains(lk, "url") || strings.Contains(lk, "link") {
 					if s, ok := sv.(string); ok && isHTTPURL(s) {
 						return s
 					}
