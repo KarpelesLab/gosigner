@@ -42,6 +42,29 @@ go run github.com/KarpelesLab/gosigner/cli/signreq@latest \
 
 The client picks an ephemeral Spot identity, encrypts the binary, hands it to the daemon over Spot, and writes the signed result.
 
+### signreq flags
+
+| Flag | Env | Default | Notes |
+|------|-----|---------|-------|
+| `-peer` | `GOSIGNER_PEER` | _(required)_ | Daemon Spot peer id, `k.…` |
+| `-secret` | `GOSIGNER_SECRET` | _(required)_ | Shared secret matching the daemon's `-secret` |
+| `-o` | — | `<name>.signed<ext>` | Output path |
+| `-name` | — | _(none)_ | Program name embedded in `SpcSpOpusInfo` (publisher's display name — equivalent to signtool `/d`, osslsigncode `-n`) |
+| `-url` | — | _(none)_ | Program URL embedded in `SpcSpOpusInfo` (the "More information" link — equivalent to signtool `/du`, osslsigncode `-i`) |
+| `-endpoint` | `GOSIGNER_ENDPOINT` | `sign` | Spot endpoint name on the daemon |
+| `-timeout` | — | `5m` | Overall timeout for the round trip |
+
+Example with publisher metadata:
+
+```sh
+go run github.com/KarpelesLab/gosigner/cli/signreq@latest \
+    -peer   k.PEER-ID \
+    -secret '<shared-secret>' \
+    -name   "ACME Widget Installer 3.2" \
+    -url    "https://acme.example/installer" \
+    -o      installer.signed.exe installer.exe
+```
+
 ## Daemon (token side)
 
 The host that physically holds the token runs:
