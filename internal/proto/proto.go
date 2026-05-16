@@ -30,13 +30,18 @@ const Endpoint = "sign"
 
 // SignRequest is the JSON body sent by signreq to the daemon inside an
 // end-to-end-encrypted Spot message. URL points at an AES-256-GCM
-// encrypted blob on Util/TempFile; Key/Nonce decrypt it.
+// encrypted blob on Util/TempFile; Key/Nonce decrypt it. ProgramName
+// and ProgramURL populate the SpcSpOpusInfo signed attribute (the
+// publisher's display name and "more info" link surfaced by Authenticode
+// verifiers); both optional, both default to empty / omitted.
 type SignRequest struct {
-	Secret   string `json:"secret"`
-	URL      string `json:"url"`
-	Key      []byte `json:"key"`   // 32 bytes (base64 in JSON)
-	Nonce    []byte `json:"nonce"` // 12 bytes (base64 in JSON)
-	Filename string `json:"filename"`
+	Secret      string `json:"secret"`
+	URL         string `json:"url"`
+	Key         []byte `json:"key"`   // 32 bytes (base64 in JSON)
+	Nonce       []byte `json:"nonce"` // 12 bytes (base64 in JSON)
+	Filename    string `json:"filename"`
+	ProgramName string `json:"program_name,omitempty"`
+	ProgramURL  string `json:"program_url,omitempty"`
 }
 
 // SignResponse is the JSON body the daemon returns (also inside an

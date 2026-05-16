@@ -38,6 +38,8 @@ func main() {
 	out := flag.String("o", "", "output path (default <name>.signed<ext>)")
 	endpoint := flag.String("endpoint", env("GOSIGNER_ENDPOINT", proto.Endpoint), "Spot endpoint name on the daemon")
 	timeout := flag.Duration("timeout", 5*time.Minute, "overall timeout")
+	programName := flag.String("name", "", "program name embedded in SpcSpOpusInfo (signtool /d, osslsigncode -n)")
+	programURL := flag.String("url", "", "program URL embedded in SpcSpOpusInfo (signtool /du, osslsigncode -i)")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "usage: signreq [flags] <input.exe>\n\n")
 		flag.PrintDefaults()
@@ -95,11 +97,13 @@ func main() {
 	}
 
 	reqBody, err := json.Marshal(proto.SignRequest{
-		Secret:   *secret,
-		URL:      url,
-		Key:      key,
-		Nonce:    nonce,
-		Filename: name,
+		Secret:      *secret,
+		URL:         url,
+		Key:         key,
+		Nonce:       nonce,
+		Filename:    name,
+		ProgramName: *programName,
+		ProgramURL:  *programURL,
 	})
 	if err != nil {
 		log.Fatalf("marshal request: %v", err)

@@ -174,7 +174,7 @@ func (s *signerSrv) handle(msg *spotproto.Message) ([]byte, error) {
 		return nil, fmt.Errorf("decrypt source: %w", err)
 	}
 
-	signed, err := s.sign(ctx, plain)
+	signed, err := s.sign(ctx, plain, req.ProgramName, req.ProgramURL)
 	if err != nil {
 		log.Printf("signing %s failed: %v", name, err)
 		return nil, fmt.Errorf("signing failed: %w", err)
@@ -204,13 +204,17 @@ func (s *signerSrv) handle(msg *spotproto.Message) ([]byte, error) {
 
 // sign produces an Authenticode signature over the PE bytes using the
 // on-token key, in pure Go. Token access is serialized; the HSM-side
-// session/PIN is held inside the Signer.
-func (s *signerSrv) sign(ctx context.Context, data []byte) ([]byte, error) {
+// session/PIN is held inside the Signer. programName/programURL are
+// passed through from the client and end up in SpcSpOpusInfo; either
+// can be empty.
+func (s *signerSrv) sign(ctx context.Context, data []byte, programName, programURL string) ([]byte, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return authenticode.Sign(data, s.signer, authenticode.SignOptions{
-		Hash:    s.cfg.hash,
-		TSAURL:  s.cfg.timestampURL,
-		Context: ctx,
+		Hash:        s.cfg.hash,
+		TSAURL:      s.cfg.timestampURL,
+		Context:     ctx,
+		ProgramName: programName,
+		ProgramURL:  programURL,
 	})
 }
